@@ -15,13 +15,13 @@ ARG EXPORTER=mq_prometheus
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
 ## ### ### ### ### ### ### BUILD ### ### ### ### ### ### ##
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
-FROM golang:1.20 AS builder
+FROM golang:1.18 AS builder
 
 ARG EXPORTER
 ENV EXPORTER=${EXPORTER} \
     ORG="github.com/ibm-messaging" \
     REPO="mq-metric-samples" \
-    VRMF=9.3.5.0 \
+    VRMF=9.3.4.0 \
     CGO_CFLAGS="-I/opt/mqm/inc/" \
     CGO_LDFLAGS_ALLOW="-Wl,-rpath.*" \
     genmqpkg_incnls=1 \
@@ -100,8 +100,8 @@ COPY --chmod=777 ./cmd/${EXPORTER} .
 COPY --chmod=777 vendor ./vendor
 COPY --chmod=777 pkg ./pkg
 # This file holds something like the current commit level if it exists in your tree. It might not be there, so
-# we use wildcards and a known file to avoid errors on non-existent files/dirs.
-COPY --chmod=777 README.md ./.git*/refs/heads/master* .
+# we use wildcards to avoid errors on non-existent files/dirs.
+#COPY --chmod=777 ./.git*/refs/heads/master* .
 RUN buildStamp=`date +%Y%m%d-%H%M%S`; \
     hw=`uname -m`; \
     os=`uname -s`; \
@@ -113,7 +113,7 @@ RUN buildStamp=`date +%Y%m%d-%H%M%S`; \
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
 ### ### ### ### ### ### ### RUN ### ### ### ### ### ### ###
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
-FROM golang:1.20 AS runtime
+FROM golang:1.19 AS runtime
 
 ARG EXPORTER
 
